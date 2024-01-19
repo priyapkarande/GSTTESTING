@@ -1,0 +1,1011 @@
+{
+	"info": {
+		"_postman_id": "898fde9c-bf11-4b34-8833-d803964a4c25",
+		"name": "Integration testing of inventory module",
+		"description": "# ⛓️ Get started here\n\nPostman allows you to test your APIs using simple Javascript code. You can evaluate your response body, headers, cookies, and more using the [ChaiJS BDD](https://www.chaijs.com/api/bdd/) syntax.\n\nThis template guides you through the process of setting up an integration test to ensure that all individual components of an API function together seamlessly.\n\nThe API under test in this collection includes three endpoints for registering and receiving a token, accessing your unique generated name, and unregistering a token:\n\n- POST `/register`\n- POST `/unregister`\n- GET `/my-name`\n    \n\nBy setting up requests in the order of the operation, we can test the flow of data to and from the endpoints and ensure they work together as expected. We also verify that the data persists between requests on the back end.\n\n## 🔖 **How to use this template**\n\n**Step 1:** Check out the requests' documentation to learn more about -\n\n- what each request is meant to do.\n- the tests we've added against each one.\n    \n\n**Step 2:** Run this collection by clicking on \"Run\".\n\n<img src=\"https://content.pstmn.io/84019b0f-69c8-4c5f-98b9-2c90a6f9a0b1/Y29sbGVjdGlvbi1ydW5uZXItYnV0dG9uLmpwZWc=\" alt=\"\" height=\"103\" width=\"266\">\n\n**Step 3:** To customize this template, replace the request URLs with your API endpoints and add or edit the tests if needed.\n\n## ℹ️ Resources\n\n[Scripting in Postman](https://learning.postman.com/docs/writing-scripts/intro-to-scripts/)\n\n[Test script examples](https://learning.postman.com/docs/writing-scripts/script-references/test-examples/)\n\n[Postman Sandbox API reference](https://learning.postman.com/docs/sending-requests/grpc/postman-sandbox-api/#writing-assertions)\n\n[Using the Collection Runner](https://learning.postman.com/docs/collections/running-collections/intro-to-collection-runs/)",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "32083240"
+	},
+	"item": [
+		{
+			"name": "token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const l_token = pm.response.json().l_UserProfile.l_token;\r",
+							"pm.test(\"New Token Generate\", function () {\r",
+							"   pm.environment.set(\"token\",l_token)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"gmd_LoginId\":\"system\",\"gmd_Password\":\"W7qT9oD+/2+UinUzuVW60w==\"}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/AdminService-1.0/admin/ctrl/all_login",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"AdminService-1.0",
+						"admin",
+						"ctrl",
+						"all_login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "generate random item",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"The endpoint returns the expected status code\", () => {\r",
+							"  \r",
+							"  const expectedStatusCodes = [200, 201];\r",
+							"\r",
+							"  pm.expect(pm.response.code).to.be.oneOf(\r",
+							"    expectedStatusCodes\r",
+							"    );\r",
+							"    \r",
+							"});\r",
+							"pm.test(\"Response time is less than 200ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"API response contains the expected fields\", () => {\r",
+							"  const response = pm.response.json();\r",
+							"  \r",
+							"});\r",
+							"pm.test(\"API response contains the expected fields\", () => {\r",
+							"    const response = pm.response.json();\r",
+							"    pm.expect(response).to.have.all.keys(['l_Item_Mst_Model', 'l_Item_Dtl_Model']);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"The endpoint does not return unexpected status codes\", () => {\r",
+							"  \r",
+							"  const unexpectedStatusCodes = [404, 500];\r",
+							"\r",
+							"  pm.expect(pm.response.code).to.not.be.oneOf(\r",
+							"    unexpectedStatusCodes,\r",
+							"    \r",
+							"  );\r",
+							"});\r",
+							"const l_id = pm.response.json().l_id;\r",
+							"pm.test(\"Get Item Id\", function () {\r",
+							"   pm.environment.set(\"itemid\",l_id)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"Randomitemname\",pm.variables.replaceIn\r",
+							"('{{$randomProductName}}'));\r",
+							"// pm.environment.set(\"item code\",pm.variables.replaceIn\r",
+							"// ('{{$randomAlphaNumeric}}'));\r",
+							"\r",
+							"let itemcode = pm.environment.get(\"item code\");\r",
+							"itemcode = itemcode ? parseInt(itemcode) + 1 : 1001;\r",
+							"pm.environment.set(\"item code\",itemcode);\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.test(\"Response property matches environment variable\", function () {\r",
+							"//   pm.expect(pm.response.json().name).to.eql(pm.environment.get(\"name\"));\r",
+							"// });"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"l_Item_Mst_Model\": {\r\n        \"item_id\": \"\",\r\n        \"item_parent_id\": \"\",\r\n        \"item_entitycode_ent\": \"001001000000000000\",\r\n        \"item_code\": \"{{item code}}\",\r\n        \"item_hsn_code_hsnm\": \"04021010\",\r\n        \"item_name\": \"{{Randomitemname}}\",\r\n        \"item_soname\": \"Fantastic Cotton Salad\",\r\n        \"item_poname\": \"Fantastic Cotton Salad\",\r\n        \"item_sku_group\": \"\",\r\n        \"item_type_sitm\": \"2\",\r\n        \"item_subtype_stsm\": \"ISUB000000000009\",\r\n        \"item_inventorytype\": \"1\",\r\n        \"item_ispurchasable\": \"YES\",\r\n        \"item_issaleable\": \"YES\",\r\n        \"item_isqc\": \"YES\",\r\n        \"item_isreturnable\": \"NO\",\r\n        \"item_isppc_enabled\": \"NO\",\r\n        \"item_isworkorder\": \"NO\",\r\n        \"item_isbatchlot\": \"LOT\",\r\n        \"item_stock_uom_unit\": \"KG\",\r\n        \"item_stock_suom_unit\": \"KG\",\r\n        \"item_stock_uom_conv\": 1,\r\n        \"item_sale_uom_unit\": \"KG\",\r\n        \"item_sale_uom_conv\": 1,\r\n        \"item_purchase_uom_unit\": \"KG\",\r\n        \"item_purchase_uom_conv\": 1,\r\n        \"item_issue_uom_unit\": \"KG\",\r\n        \"item_issue_uom_conv\": 1,\r\n        \"item_isproprietary\": \"NO\",\r\n        \"item_preferred_vendors\": \" \",\r\n        \"item_outside_processing\": \"OUT\",\r\n        \"item_shelf_life_Days\": \"3\",\r\n        \"item_print_tag\": \"E\",\r\n        \"item_po_tolerance\": \"0\",\r\n        \"item_brand\": \" \",\r\n        \"item_manufacturer\": \" \",\r\n        \"item_purchase_pattern\": \"L\",\r\n        \"item_sale_pattern\": \"L\",\r\n        \"item_isdiscountinued\": \"NO\",\r\n        \"item_length\": \"0\",\r\n        \"item_width\": \"0\",\r\n        \"item_height\": \"0\",\r\n        \"item_unit_wt\": \"0\",\r\n        \"item_unit_wt_uom\": \"\",\r\n        \"item_islocked\": \"NO\",\r\n        \"item_image_path\": \"\",\r\n        \"item_quotation_required\": \"YES\",\r\n        \"item_auto_indent\": \"NO\",\r\n        \"item_istaxable\": \"N\",\r\n        \"item_sales_account\": \"\",\r\n        \"item_purchase_account\": \"\",\r\n        \"item_stock_account\": \"\",\r\n        \"item_consumption_account\": \"\",\r\n        \"item_license_type_gmst\": \"03\",\r\n        \"item_category_gmst\": \"\",\r\n        \"item_deptid_dept\": \"DEPT000000000036\",\r\n        \"item_cost_centre_gmst\": \"02\",\r\n        \"item_bar_qr_code\": \" \",\r\n        \"item_Lotbatch_mixing\": \"NO\",\r\n        \"item_iswastage\": \"NO\",\r\n        \"item_isbyproduct\": \"NO\",\r\n        \"item_independent\": \"NO\",\r\n        \"item_property_1\": \"NO\",\r\n        \"item_property_2\": \"NO\",\r\n        \"item_property_3\": \"NO\",\r\n        \"item_conv_formula\": \"\",\r\n        \"item_financial_booking_type\": \"\",\r\n        \"item_report_tag1\": \" \",\r\n        \"item_report_tag2\": \" \",\r\n        \"item_report_tag3\": \" \",\r\n        \"item_report_tag4\": \" \",\r\n        \"item_report_tag5\": \" \",\r\n        \"item_wf_tag_1\": \"01\",\r\n        \"item_wf_tag_2\": \"01\",\r\n        \"item_isworkflow_approved\": \"NO\",\r\n        \"item_isactive\": \"YES\",\r\n        \"item_isdraft\": \"YES\",\r\n        \"item_indent_required\": \"YES\",\r\n        \"item_direct_po_allowed\": \"YES\",\r\n        \"l_dtyp_type\": null,\r\n        \"l_item_preferred_vendors_name\": null\r\n    },\r\n    \"l_Item_Dtl_Model\": {\r\n        \"itmd_id\": \"ITMD000000000128\",\r\n        \"itmd_itemid_item\": \"ITEM000000000128\",\r\n        \"itmd_entity_code_ent\": \"001001000000000000\",\r\n        \"itmd_Store_Entity_Code_ent\": \"001001010000000000\",\r\n        \"itmd_store_sub_loc_stor\": \"STOR000000000001\",\r\n        \"itmd_min_qty\": 0,\r\n        \"itmd_max_qty\": \"0\",\r\n        \"itmd_reorder_level\": \"0\",\r\n        \"itmd_reorder_qty\": \"0\",\r\n        \"itmd_buffer_stock\": \"0\",\r\n        \"itmd_lead_time\": \"0\",\r\n        \"itmd_avg_daily_cons\": \"0\",\r\n        \"itmd_islocked\": \"NO\",\r\n        \"itmd_isactive\": \"YES\"\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/create_item",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"create_item"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Party master",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"",
+							"pm.test(\"Party created successfully\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const l_id = pm.response.json().l_id;",
+							"pm.test(\"Get Indent Id\", function () {",
+							"   pm.environment.set(\"Party_id\",l_id)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"Random address\",pm.variables.replaceIn\r",
+							"('{{$randomStreetAddress}}'));\r",
+							"pm.environment.set(\"City\",pm.variables.replaceIn\r",
+							"('{{$randomCity}}'));\r",
+							"pm.environment.set(\"Name\",pm.variables.replaceIn\r",
+							"('{{$randomFirstName}}'));\r",
+							"pm.environment.set(\"Account number\",pm.variables.replaceIn\r",
+							"('{{$randomBankAccount}}'));\r",
+							"pm.environment.set(\"Alias\",pm.variables.replaceIn\r",
+							"('{{$randomAbbreviation}}'));\r",
+							"// pm.environment.set(\"Phone number\",pm.variables.replaceIn\r",
+							"// ('(+91)'+'{{$randomPhoneNumber}}'));\r",
+							"\r",
+							"pm.environment.set(\"Phone number\",pm.variables.replaceIn\r",
+							"('{{$randomPhoneNumber}}'));\r",
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"currentdate\",moment().format(\"\"));\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"// function generateRandomMobileNumber() {\r",
+							"//     const min = Math.pow(10, 9);\r",
+							"//     const max = Math.pow(10, 10) - 1;\r",
+							"//     return Math.floor(Math.random()* (max - min + 1)) + min;\r",
+							"//     }\r",
+							"\r",
+							"//     pm.environment.set(\"randomPhoneNumber\", generateRandomMobileNumber());"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"acnt_party_tag\": \"C\",\r\n  \"acnt_credit_limit\": 0,\r\n  \"acnt_default_credit_days\": 1,\r\n  \"acnt_no_credit_os_bills\": 3,\r\n  \"acnt_overdue_int_per\": 0,\r\n  \"acnt_isactive\": \"YES\",\r\n  \"acnt_wf_doctype_dtyp\": \"DT0016\",\r\n  \"acnt_txn_currency_curr\": \"INR\",\r\n  \"acnt_perm_add_county_cntr\": \"IN\",\r\n  \"acnt_perm_add_state_stat\": \"MH\",\r\n  \"acnt_corres_add_address\": \"{{Random address}}\",\r\n  \"acnt_corres_add_county_cntr\": \"IN\",\r\n  \"acnt_corres_add_state_stat\": \"MH\",\r\n  \"acnt_corres_add_city\": \"{{City}}\",\r\n  \"acnt_corres_add_zip\": 334565,\r\n  \"acnt_corress_add_name\": \"{{Name}}\",\r\n  \"acnt_corres_add_phone\": \"{{Phone number}}\",\r\n  \"acnt_billing_add_address\": \"{{Random address}}\",\r\n  \"acnt_billing_add_county_cntr\": \"IN\",\r\n  \"acnt_billing_add_state_stat\": \"MH\",\r\n  \"acnt_billing_add_city\": \"{{City}}\",\r\n  \"acnt_billing_add_zip\": 334565,\r\n  \"acnt_billing_add_name\": \"{{Name}}\",\r\n  \"acnt_billing_add_phone\": \"{{Phone number}}\",\r\n  \"acnt_shipping_add_address\": \"{{Random address}}\",\r\n  \"acnt_shipping_add_county_cntr\": \"IN\",\r\n  \"acnt_shipping_add_state_stat\": \"MH\",\r\n  \"acnt_shipping_add_city\": \"{{City}}\",\r\n  \"acnt_shipping_add_zip\": 334565,\r\n  \"acnt_shipping_add_name\": \"Shivani\",\r\n  \"acnt_shipping_add_phone\": \"{{Phone number}}\",\r\n  \"acnt_trade_names\": \"trade\",\r\n  \"acnt_wf_tag1_code\": \" \",\r\n  \"acnt_wf_tag2_code\": \" \",\r\n  \"acnt_tds_applicable\": \"YES\",\r\n  \"acnt_account_name\": \"{{Name}}\",\r\n  \"acnt_account_name_alias\": \"{{Alias}}\",\r\n  \"acnt_account_code\": \"{{Account number}}\",\r\n  \"acnt_account_group_agrp\": \"ACGP000000000001\",\r\n  \"acnt_company_type_gmst\": \"GENM000000000011\",\r\n  \"acnt_gst_regn_type\": \"R\",\r\n  \"acnt_gstno\": \"22AAAAA0055A1Z5\",\r\n  \"acnt_panno\": \"AAAAA0055A\",\r\n  \"acnt_tcs_applicable\": \"NO\",\r\n  \"acnt_contact_person\": \"{{Name}}\",\r\n  \"acnt_contact_mobno_1\": \"{{Phone number}}\",\r\n  \"acnt_fssai_no\": \"23456789\",\r\n  \"acnt_fssai_effective_from\": \"{{currentdate}}\",\r\n  \"acnt_fssai_effective_upto\": \"{{currentdate}}\",\r\n  \"acnt_bank_name\": \"Sbi\",\r\n  \"acnt_branch_name\": \"Nagpur\",\r\n  \"acnt_bank_acc_no\": 12355764567476,\r\n  \"acnt_ifsc\": \"12346778975\",\r\n  \"acnt_upi_id\": \"shiv@ybl\",\r\n  \"acnt_swift_code\": \"45676GH4rKJ\",\r\n  \"acnt_perm_add_name\": \"{{Name}}\",\r\n  \"acnt_perm_add_address\": \"{{Random address}}\",\r\n  \"acnt_perm_add_city\": \"{{City}}\",\r\n  \"acnt_perm_add_zip\": 334565,\r\n  \"acnt_perm_add_phone\": \"{{Phone number}}\",\r\n  \"acnt_tds_tcs_rate\": 0,\r\n  \"acnt_isdraft\": \"NO\",\r\n  \"acnt_isworkflowapproved\": \"YES\",\r\n  \"acnt_os_due_check\": \"NO\",\r\n  \"acnt_report_tag1\": \" \",\r\n  \"acnt_report_tag2\": \" \",\r\n  \"acnt_report_tag3\": \" \",\r\n  \"acnt_report_tag4\": \" \",\r\n  \"acnt_report_tag5\": \" \",\r\n  \"acnt_billing_cycle\": \" \",\r\n  \"acnt_iec_code\": \" \",\r\n  \"acnt_entity_code_ent\": \"001001000000000000\",\r\n  \"acnt_account_type\": \"P\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_customer",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_customer"
+					]
+				},
+				"description": "This returns a `token` that you can use to retrieve information later on.\n\nWe have included a test to confirm if a token is returned. We have also added test scripts to copy the token to the `token` collection variable. This makes it easy for us to reuse this token in other requests in the collection."
+			},
+			"response": []
+		},
+		{
+			"name": "Indent",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// pm.test(\"A name is returned\", () => {",
+							"//     pm.expect(pm.response.json()).to.have.property('name');",
+							"//     pm.expect(pm.response.json().name).to.be.a('string');",
+							"// })",
+							"pm.test(\"Indent created successfully\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"const l_id = pm.response.json().l_id;",
+							"pm.test(\"Get Indent Id\", function () {",
+							"   pm.environment.set(\"Indent_id\",l_id)",
+							"});",
+							"const l_docmentNo = pm.response.json().l_docmentNo;",
+							"pm.test(\"Get document no\", function () {",
+							"   pm.environment.set(\"Indentdocno\",l_docmentNo)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"Randomitemname\",pm.variables.replaceIn\r",
+							"('{{$randomProductName}}'));\r",
+							"\r",
+							"\r",
+							"\r",
+							"// pm.environment.set(\"item code\",pm.variables.replaceIn\r",
+							"// ('{{$randomAlphaNumeric(1,5)}}'));\r",
+							"pm.environment.set(\"qty\",pm.variables.replaceIn\r",
+							"('{{$randomInt}}'));\r",
+							"\r",
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"currentdate\",moment().format(\"YYYY-MM-DD\"));\r",
+							"// current date and time\r",
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"currentdatetime\",moment().format(\"YYYY-MM-DD HH:mm:ss\"));\r",
+							"\r",
+							"//current date\r",
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"currentdate\",moment().format(\"YYYY-MM-DD\"));\r",
+							"\r",
+							"//current date with JAN,FEB\r",
+							"var datemoment = require('moment');\r",
+							"pm.environment.set(\"cdate\",datemoment().format(\"DD/MMM/YYYY\"));\r",
+							"\r",
+							"\r",
+							"let qty = pm.environment.get(\"qty\");\r",
+							"let rate = 100 ;\r",
+							"let qtyrate = (rate * qty )\r",
+							"pm.environment.set(\"qtyrate\",qtyrate.toString());\r",
+							"\r",
+							"// let itemcode = pm.environment.get(\"item code\");\r",
+							"// itemcode = itemcode ? parseInt(itemcode) + 1 : 1001;\r",
+							"// pm.environment.set(\"item code\",itemcode);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"l_Inv_Indent_Hdr_Model\": {\r\n    \"indh_entity_code_ent\": \"001001000000000000\",\r\n    \"indh_material_type\": \"G\",\r\n    \"indh_wf_doctype_dtyp\": \"DT0017\",\r\n    \"indh_department_dept\": \"DEPT000000000001\",\r\n    \"indh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"indh_fy_display_desc\": \"2023-24\",\r\n    \"indh_indent_date\": \"{{currentdatetime}}\",\r\n    \"indh_currency_curr\": \"INR\",\r\n    \"indh_wf_tag1_code\": \"2\",\r\n    \"indh_wf_tag2_code\": \"3\",\r\n    \"indh_wf_series_serm\": \"SD\",\r\n    \"indh_terms_and_cond_gmst\": \"GENM000000000075\",\r\n    \"indh_indent_type_gmst\": \"GENM000000000016\",\r\n    \"indh_indent_amount\": \"{{qtyrate}}\",\r\n    \"indh_isdraft\": \"NO\",\r\n    \"indh_isworkflowapproved\": \"YES\",\r\n    \"indh_indent_id\": \"\",\r\n    \"indh_indent_no\": \"\",\r\n    \"indh_remarks\": \"\"\r\n  },\r\n  \"l_Inv_Indent_Dtl_Line_Model\": [\r\n    {\r\n      \"l_Inv_Indent_Del_Sch_Dtl_List\": [\r\n        {\r\n          \"inds_id\": \"\",\r\n          \"inds_delivery_dt\": \"{{currentdate}}\",\r\n          \"inds_indent_dtl_id_indd\": \"129688818\",\r\n          \"inds_delivery_qty\": {{qty}},\r\n          \"inds_pref_transporter\": \" \",\r\n          \"inds_remarks\": \"\",\r\n          \"l_new_entry\": true,\r\n          \"l_inds_delivery_dt_name\": \"{{cdate}}\",\r\n          \"inds_indent_id_indh\": \"\"\r\n        }\r\n      ],\r\n      \"l_Inv_Indent_Dtl_Model\": {\r\n        \"indd_id\": \"\",\r\n        \"l_new_entry\": \"YES\",\r\n        \"l_indd_required_by_dt_old\": \"{{currentdate}}\",\r\n        \"indd_preferred_suppliers\": \"CUST000000000021\",\r\n        \"indd_required_by_dt\": \"{{currentdate}}\",\r\n        \"l_inv_indent_del_sch_dtl_List\": [\r\n          {\r\n            \"inds_id\": \"734665186\",\r\n            \"inds_delivery_dt\": \"{{currentdate}}\",\r\n            \"inds_indent_dtl_id_indd\": \"129688818\",\r\n            \"inds_delivery_qty\": {{qty}},\r\n            \"inds_pref_transporter\": \"\",\r\n            \"inds_remarks\": \"\",\r\n            \"l_new_entry\": true,\r\n            \"l_inds_delivery_dt_name\": \"{{cdate}}\"\r\n          }\r\n        ],\r\n        \"indd_item_id_item\": \"ITEM000000000136\",\r\n        \"indd_item_uom_unit\": \"KG\",\r\n        \"indd_rate\": 100,\r\n        \"indd_indent_qty\": \"{{qty}}\",\r\n        \"indd_item_tech_desc\": \"TEST\",\r\n        \"indd_item_name\": \"{{Randomitemname}}\",\r\n        \"indd_item_code\": \"{{item code}}\",\r\n        \"l_indd_required_by_dt_name\": \"{{cdate}}\",\r\n        \"l_inds_delivery_dt\": \"\",\r\n        \"l_indd_indent_amount\": \"{{qtyrate}}\",\r\n        \"l_indd_item_name\": \"{{item code}} - {{Randomitemname}}\",\r\n        \"indd_enquiry_status\": \"NO\",\r\n        \"indd_po_status\": \"NO\",\r\n        \"indd_srno\": 0,\r\n        \"indd_remarks\": \"\"\r\n      }\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/create_indent",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"create_indent"
+					]
+				},
+				"description": "This request uses the saved `token` collection variable to access a secret 'name' stored against that token.\n\nIn this request, we used the `token` collection variable as a query param to fetch the name generated for that token. We have added a test to check that a name is correctly returned."
+			},
+			"response": []
+		},
+		{
+			"name": "Enquiry Entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Enquiry created successfully\", function ()  {",
+							"    pm.response.to.have.status(200)",
+							"});",
+							"const l_id = pm.response.json().l_id;",
+							"pm.test(\"Get Indent Id\", function () {",
+							"   pm.environment.set(\"Enquiry_id\",l_id)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"deliverypoint\",pm.variables.replaceIn\r",
+							"('{{$randomCity}}'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"l_EnquiryEntryHdrModel\": {\n    \"ineh_enquiry_id\": \"\",\n    \"ineh_enquiry_status\": \"O\",\n    \"ineh_wf_series_serm\": \"ENQ\",\n    \"ineh_wf_tag1_code\": \" \",\n    \"ineh_wf_tag2_code\": \" \",\n    \"ineh_wf_doctype_dtyp\": \"DT0018\",\n    \"ineh_min_quote_required\": 1,\n    \"ineh_quote_submit_last_dt\": \"{{currentdatetime}}\",\n    \"ineh_quote_opening_dt\": \"{{currentdatetime}}\",\n    \"ineh_delivery_point_gmst\": \"{{deliverypoint}}\",\n    \"ineh_accept_delayed_response\": \"YES\",\n    \"ineh_enquiry_type\": \"S\",\n    \"ineh_isdraft\": \"NO\",\n    \"ineh_isworkflowapproved\": \"YES\",\n    \"l_grid_edit_hide\": \"YES\",\n    \"l_ineh_quote_submit_last_dt_name\": \"{{cdate}}\",\n    \"l_ineh_quote_opening_dt_name\": \"{{cdate}}\",\n    \"ineh_entity_code_ent\": \"001001000000000000\",\n    \"ineh_fy_display_desc\": \"2023-24\",\n    \"ineh_fy_id_fyrm\": \"FINM000000000002\"\n  },\n  \"l_EnquiryDetailModel\": [\n    {\n      \"ined_id\": \"\",\n      \"ined_enquiry_id_ineh\": \"\",\n      \"l_Enquiry_Delivery_Schedule\": [\n        {\n          \"inev_id\": \"\",\n          \"inev_enqdtl_id_ined\": \"\",\n          \"inev_delivery_date\": \"{{currentdatetime}}\",\n          \"inev_delivery_qty\": \"-67\",\n          \"l_ds_pref_transporter\": \"\",\n          \"inev_item_id_item\": \"{{itemid}}\",\n          \"inev_qty_uom_unit\": \"KG\",\n          \"l_ds_remarks\": \"\",\n          \"l_new_entry\": true,\n          \"l_ds_delivery_dt_name\": \"{{cdate}}\"\n        }\n      ],\n      \"l_Enquiry_Indent_Detail\": [\n        {\n          \"iend_item_id\": \"{{itemid}}\",\n          \"iend_indent_entity_code_ent\": \"001001000000000000\",\n          \"iend_enq_entity_code_ent\": \"001001000000000000\",\n          \"iend_indent_dtl_id\": \" \",\n          \"iend_indent_id\": \" \",\n          \"iend_indent_qty\": {{qty}},\n          \"iend_enquiry_qty\": {{qty}},\n          \"iend_id\": \"\",\n          \"iend_enqdtl_id_ined\": \"\",\n          \"l_iend_item_name\": \"{{Randomitemname}}\",\n          \"l_iend_item_code_name\": \"{{item code}}-{{Randomitemname}}\",\n          \"l_indh_indent_no\": \"{{Indentdocno}}\",\n          \"l_item_name_code\": \"{{item code}}-{{Randomitemname}}\",\n          \"l_dept_deptname\": \"Administration2\",\n          \"l_indd_item_tech_desc\": \"TEST\",\n          \"l_indd_item_uom_unit\": \"KG\",\n          \"l_sitm_type_description\": \"RAW MATERIAL\",\n          \"l_stsm_subtype_description\": \"CONDENSED MILK\"\n        }\n      ],\n      \"ined_item_id_item\": \"{{itemid}}\",\n      \"ined_item_code\": \"{{item code}}\",\n      \"ined_qty\": \"{{qty}}\",\n      \"ined_item_tech_desc\": \"TEST\",\n      \"ined_uom_unit\": \"KG\",\n      \"ined_item_name\": \"{{Randomitemname}}\",\n      \"l_item_name_code\": \"{{item code}}-{{Randomitemname}}\",\n      \"ined_multiple_lot\": \"NO\",\n      \"ined_vendors\": \"CUST000000000021\",\n      \"ined_required_by_dt\": \"{{currentdatetime}}\",\n      \"l_ds_delivery_old_date\": \"{{currentdate}}\",\n      \"l_ined_required_by_dt_name\": \"{{cdate}}\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_enquiry",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_enquiry"
+					]
+				},
+				"description": "This request un-registers a token by using the token collection variable in the POST body.\n\nWe also added a test to ensure the response has a 200 OK status code."
+			},
+			"response": []
+		},
+		{
+			"name": "Enquiry Entry Copy",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Enquiry created successfully\", function()  {",
+							"    pm.response.to.have.status(400);",
+							"});",
+							"const l_id = pm.response.text();",
+							"pm.test(\"Get Indent Id\", function () {",
+							"   pm.environment.set(\"Enquiry_id\",l_id)",
+							"});",
+							"",
+							"",
+							"",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"deliverypoint\",pm.variables.replaceIn\r",
+							"('{{$randomCity}}'));\r",
+							"\r",
+							"pm.environment.set(\"datesubmisssion\",pm.variables.replaceIn\r",
+							"('{{$randomDatePast}}'));\r",
+							"\r",
+							"var moment = require('moment');\r",
+							"pm.environment.set(\"datesubmisssion\",moment().format(\"\"));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"l_EnquiryEntryHdrModel\": {\n    \"ineh_enquiry_id\": \"\",\n    \"ineh_enquiry_status\": \"O\",\n    \"ineh_wf_series_serm\": \"ENQ\",\n    \"ineh_wf_tag1_code\": \" \",\n    \"ineh_wf_tag2_code\": \" \",\n    \"ineh_wf_doctype_dtyp\": \"DT0018\",\n    \"ineh_min_quote_required\":1 ,\n    \"ineh_quote_submit_last_dt\": \"{{currentdatetime}}\",\n    \"ineh_quote_opening_dt\": \"{{currentdatetime}}\",\n    \"ineh_delivery_point_gmst\": \"{{deliverypoint}}\",\n    \"ineh_accept_delayed_response\": \"YES\",\n    \"ineh_enquiry_type\": \"L\",\n    \"ineh_isdraft\": \"NO\",\n    \"ineh_isworkflowapproved\": \"YES\",\n    \"l_grid_edit_hide\": \"YES\",\n    \"l_ineh_quote_submit_last_dt_name\": \"{{cdate}}\",\n    \"l_ineh_quote_opening_dt_name\": \"{{cdate}}\",\n    \"ineh_entity_code_ent\": \"001001000000000000\",\n    \"ineh_fy_display_desc\": \"2023-24\",\n    \"ineh_fy_id_fyrm\": \"FINM000000000002\"\n  },\n  \"l_EnquiryDetailModel\": [\n    {\n      \"ined_id\": \"\",\n      \"ined_enquiry_id_ineh\": \"\",\n      \"l_Enquiry_Delivery_Schedule\": [\n        {\n          \"inev_id\": \"\",\n          \"inev_enqdtl_id_ined\": \"\",\n          \"inev_delivery_date\": \"{{currentdatetime}}\",\n          \"inev_delivery_qty\": \"{{qty}}\",\n          \"l_ds_pref_transporter\": \"\",\n          \"inev_item_id_item\": \"{{itemid}}\",\n          \"inev_qty_uom_unit\": \"KG\",\n          \"l_ds_remarks\": \"\",\n          \"l_new_entry\": true,\n          \"l_ds_delivery_dt_name\": \"{{cdate}}\"\n        }\n      ],\n      \"l_Enquiry_Indent_Detail\": [\n        {\n          \"iend_item_id\": \"{{itemid}}\",\n          \"iend_indent_entity_code_ent\": \"001001000000000000\",\n          \"iend_enq_entity_code_ent\": \"001001000000000000\",\n          \"iend_indent_dtl_id\": \" \",\n          \"iend_indent_id\": \" \",\n          \"iend_indent_qty\": {{qty}},\n          \"iend_enquiry_qty\": {{qty}},\n          \"iend_id\": \"\",\n          \"iend_enqdtl_id_ined\": \"\",\n          \"l_iend_item_name\": \"{{Randomitemname}}\",\n          \"l_iend_item_code_name\": \"{{item code}}-{{Randomitemname}}\",\n          \"l_indh_indent_no\": \"{{Indentdocno}}\",\n          \"l_item_name_code\": \"{{item code}}-{{Randomitemname}}\",\n          \"l_dept_deptname\": \"Administration2\",\n          \"l_indd_item_tech_desc\": \"TEST\",\n          \"l_indd_item_uom_unit\": \"KG\",\n          \"l_sitm_type_description\": \"RAW MATERIAL\",\n          \"l_stsm_subtype_description\": \"CONDENSED MILK\"\n        }\n      ],\n      \"ined_item_id_item\": \"{{itemid}}\",\n      \"ined_item_code\": \"{{item code}}\",\n      \"ined_qty\": \"{{qty}}\",\n      \"ined_item_tech_desc\": \"TEST\",\n      \"ined_uom_unit\": \"KG\",\n      \"ined_item_name\": \"{{Randomitemname}}\",\n      \"l_item_name_code\": \"{{item code}}-{{Randomitemname}}\",\n      \"ined_multiple_lot\": \"NO\",\n      \"ined_vendors\": \"CUST000000000021\",\n      \"ined_required_by_dt\": \"{{currentdate}}\",\n      \"l_ds_delivery_old_date\": \"{{currentdate}}\",\n      \"l_ined_required_by_dt_name\": \"{{cdate}}\"\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_enquiry",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_enquiry"
+					]
+				},
+				"description": "This request un-registers a token by using the token collection variable in the POST body.\n\nWe also added a test to ensure the response has a 200 OK status code."
+			},
+			"response": []
+		},
+		{
+			"name": "Quotation received",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Quotation received is done\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// var response = pm.response.json();\r",
+							"//  {\r",
+							"//     if (response.ineh_quote_opening_dt.currentdatetime > response.iqre_recieved_on.currentdatetime) {\r",
+							"//         console.log(response.currentdatetime);\r",
+							"//     }\r",
+							"// };\r",
+							"\r",
+							"const l_id = pm.response.json().l_id;\r",
+							"pm.test(\"Get quotation  Id\", function () {\r",
+							"   pm.environment.set(\"Quotation id\",l_id)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"// var moment = require('moment');\r",
+							"// pm.environment.set(\"currentdate\",moment().format(\"\"));\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"iqre_wf_doctype_dtyp\": \"DT0019\",\r\n  \"iqre_wf_series_serm\": \"RFT\",\r\n  \"iqre_wf_tag1_code\": \" \",\r\n  \"iqre_wf_tag2_code\": \" \",\r\n  \"iqre_enquiry_id_ineh\": \"{{Enquiry_id}}\",\r\n  \"iqre_vendor_acnt\": \"CUST000000000021\",\r\n  \"iqre_recieved_on\": \"{{currentdatetime}}\",\r\n  \"iqre_remarks\": \"test\",\r\n  \"iqre_id\": \"\",\r\n  \"iqre_fy_id_fyrm\": \"FINM000000000002\",\r\n  \"iqre_fy_display_desc\": \"2023-24\",\r\n  \"iqre_wf_isdraft\": \"NO\",\r\n  \"iqre_wf_isworkflowapproved\": \"YES\",\r\n  \"iqre_entity_code_ent\": \"001001000000000000\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/create_quotationrec",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"create_quotationrec"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Quotation Entry",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"console.log\r",
+							"pm.test(\"Quotation entry is done\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"\r",
+							"const l_id = pm.response.json().l_id;\r",
+							"pm.test(\"Get quotation  Id\", function () {\r",
+							"   pm.environment.set(\"Quotation entry id\",l_id)\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "\r\n{\r\n  \"l_Inv_Quotation_Hdr_Model\": {\r\n    \"quoh_quot_dt\": \"{{currentdate}}\",\r\n    \"quoh_wf_doctype_dtyp\": \"DT0020\",\r\n    \"quoh_isdraft\": \"NO\",\r\n    \"quoh_isworkflowapproved\": \"YES\",\r\n    \"quoh_enquiry_id_ineh\": \"{{Enquiry_id}}\",\r\n    \"quoh_party_id_acnt\": \"CUST000000000021\",\r\n    \"quoh_party_code\": \"49876\",\r\n    \"quoh_party_name\": \"{{Name}}\",\r\n    \"quoh_wf_series_serm\": \"QE\",\r\n    \"quoh_wf_tag1_code\": \" \",\r\n    \"quoh_wf_tag2_code\": \" \",\r\n    \"quoh_currency_curr\": \"INR\",\r\n    \"quoh_exchange_rate\": 1,\r\n    \"quoh_reference_no\": \"82467\",\r\n    \"quoh_reference_dt\": \"{{currentdate}}\",\r\n    \"quoh_payment_terms_gmst\": \"GENM000000000068\",\r\n    \"quoh_delivery_terms_gmst\": \"GENM000000000024\",\r\n    \"quoh_net_amount\": 6865.5,\r\n    \"quoh_add_on_charges\": 0,\r\n    \"quoh_remarks\": \"test\",\r\n    \"quoh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"quoh_fy_display_desc\": \"2023-24\",\r\n    \"quoh_entity_code_ent\": \"001001000000000000\"\r\n  },\r\n  \"l_Inv_Quotation_Dtl_List\": [\r\n    {\r\n      \"l_index\": 0,\r\n      \"quod_item_id_item\": \"ITEM000000000002\",\r\n      \"quod_item_name\": \"{{Randomitemname}}\",\r\n      \"l_quod_item_name_code\": \"{{item code}} - {{Randomitemname}}\",\r\n      \"quod_item_code\": \"{{item code}}\",\r\n      \"quod_specification\": \"TEST\",\r\n      \"quod_quantity\": \"809\",\r\n      \"quod_uom_unit\": \"KG\",\r\n      \"quod_igst_per_taxm\": 5,\r\n      \"quod_cgst_per_taxm\": 2,\r\n      \"quod_sgst_per_taxm\": 2,\r\n      \"quod_ugst_per_taxm\": 2,\r\n      \"quod_cess_per_taxm\": 0,\r\n      \"quod_surcharge_per_taxm\": 0,\r\n      \"quod_vat_per_taxm\": 0,\r\n      \"quod_taxrate_taxm\": \"TAXM000000000003\",\r\n      \"quod_included_for_po\": \"NO\",\r\n      \"quod_unit_amount\": 6601.44,\r\n      \"quod_pkg_forward_amount\": 129.44,\r\n      \"quod_unit_net_amount\": 6865.5,\r\n      \"quod_ugst_amount\": 0,\r\n      \"quod_cess_amount\": 0,\r\n      \"quod_sgst_amount\": 132.029,\r\n      \"quod_igst_amount\": 0,\r\n      \"quod_cgst_amount\": 132.029,\r\n      \"quod_landed_rate\": 8.486,\r\n      \"quod_discount_amt\": 0,\r\n      \"l_total_tax_amount\": 264.06,\r\n      \"l_total_tax_percent\": 4,\r\n      \"quod_basic_rate\": 8,\r\n      \"quod_pkg_forward_per\": 2\r\n    }\r\n  ]\r\n}\r\n\r\n\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_update_quotation_entry",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_update_quotation_entry"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare quotation",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"qty\",pm.variables.replaceIn\r",
+							"('{{$randomInt}}'));\r",
+							"pm.environment.set(\"rate\",pm.variables.replaceIn\r",
+							"('{{$randomInt}}'));\r",
+							"let qty = pm.environment.get(\"qty\");\r",
+							"let rate = pm.environment.get(\"rate\");\r",
+							"let discountcal = rate * 5 / 100;\r",
+							"pm.environment.set(\"discountcal\",discountcal.toFixed(2));\r",
+							"\r",
+							"let discount_rate =( rate - discountcal);\r",
+							"pm.environment.set(\"discount_rate\", discount_rate.toFixed(2));\r",
+							"\r",
+							"let pkg_forward_amount = discount_rate * 5 / 100 ;\r",
+							"pm.environment.set(\"pkg_forward_amount\",pkg_forward_amount.toFixed(2));\r",
+							"\r",
+							"let netrate = discount_rate + pkg_forward_amount ;\r",
+							"pm.environment.set(\"netrate\", netrate.toFixed(2));\r",
+							"\r",
+							"let gross_amnt = netrate * qty ;\r",
+							"pm.environment.set(\"gross_amnt\",gross_amnt.toFixed(2));\r",
+							"\r",
+							"let igst = gross_amnt * 2 / 100 ;\r",
+							"pm.environment.set(\"igst\",igst.toFixed(2));\r",
+							"\r",
+							"let total_tax = igst + igst ;\r",
+							"pm.environment.set(\"total_tax\",total_tax.toFixed(2));\r",
+							"\r",
+							"let net_amnt= gross_amnt + total_tax  ;\r",
+							"pm.environment.set(\"net_amnt\",net_amnt.toFixed(2));\r",
+							"\r",
+							"let tcs_amnt = net_amnt * 1.2 / 100;\r",
+							"pm.environment.set(\"tcs_amnt\",tcs_amnt.toFixed(2));\r",
+							"\r",
+							"let h_net_amnt_t = net_amnt + tcs_amnt;\r",
+							"pm.environment.set(\"h_net_amnt_t\",h_net_amnt_t.toFixed(2));\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"// let roundh_net_amnt_t = Math.round(h_net_amnt_t);\r",
+							"// pm.environment.set(\"roundh_net_amnt_t\",h_net_amnt_t.toString());\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"l_Inv_Po_Dtl_Line_Model\": [\r\n    {\r\n      \"l_Inv_Po_Delivery_Dtl_List\": [\r\n        {\r\n          \"podd_id\": \"\",\r\n          \"podd_po_dtl_id_pod\": \"\",\r\n          \"podd_po_id_poh\": \"\",\r\n          \"podd_delivery_qty\": \"{{qty}}\",\r\n          \"podd_delivery_date\": \"2024-01-18\",\r\n          \"podd_delivery_seq\": 1,\r\n          \"podd_po_rev\": 0\r\n        }\r\n      ],\r\n      \"l_Inv_Po_Dtl_Model\": {\r\n        \"pod_item_id_item\": \"ITEM000000000192\",\r\n        \"pod_item_code\": \"1075\",\r\n        \"pod_item_name\": \"Practical Wooden Chicken\",\r\n        \"pod_tech_specs\": \"comp\",\r\n        \"pod_qty\": \"{{qty}}\",\r\n        \"pod_po_uom_unit\": \"NOS\",\r\n        \"pod_rate\": \"{{rate}}\",\r\n        \"pod_stock_uom_unit\": \"NOS\",\r\n        \"pod_discount_per\": \"5\",\r\n        \"pod_item_tolerance\": 0,\r\n        \"pod_pkg_forwd_amout\": \"\",\r\n        \"pod_pkg_forward_per\": \"5\",\r\n        \"pod_taxrate_taxm\": \"TAXM000000000003\",\r\n        \"pod_igst_per_taxm\": 5,\r\n        \"pod_cgst_per_taxm\": 2,\r\n        \"pod_sgst_per_taxm\": 2,\r\n        \"pod_ugst_per_taxm\": 2,\r\n        \"pod_cess_per_taxm\": 0,\r\n        \"pod_surcharge_per_taxm\": 0,\r\n        \"pod_vat_per_taxm\": 0,\r\n        \"pod_tax1_per_taxm\": 0,\r\n        \"pod_tax2_per_taxm\": 0,\r\n        \"pod_tax3_per_taxm\": 0,\r\n        \"pod_igst_amount\": 0, \r\n        \"pod_cgst_amount\": \"{{igst}}\",\r\n        \"pod_sgst_amount\": \"{{igst}}\",\r\n        \"pod_ugst_amount\": 0,\r\n        \"pod_cess_amount\": 0,\r\n        \"pod_surcharge_amount\": 0,\r\n        \"pod_vat_amount\": 0,\r\n        \"pod_tax1_amount\": 0,\r\n        \"pod_tax2_amount\": 0,\r\n        \"pod_tax3_amount\": 0,\r\n        \"pod_net_rate\": \"{{netrate}}\",\r\n        \"pod_gross_amount\": \"{{gross_amnt}}\",\r\n        \"pod_net_amount\": \"{{net_amnt}}\",\r\n        \"pod_shipto_add_name\": \"Ankush\",\r\n        \"pod_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n        \"pod_shipto_add_city\": \"NAGPUR\",\r\n        \"pod_shipto_add_county_cntr\": \"IN\",\r\n        \"pod_shipto_add_state_stat\": \"MH\",\r\n        \"pod_shipto_add_zip\": \"441122\",\r\n        \"pod_shipto_add_phone\": \"+916546546546\",\r\n        \"pod_total_taxes\": \"{{total_tax}}\",\r\n        \"pod_id\": \"\",\r\n        \"pod_shipto_entity_code_ent\": \"001001000000000000\",\r\n        \"pod_po_id_poh\": \"\",\r\n        \"pod_po_rev\": 0,\r\n        \"pod_po_srno\": 0,\r\n        \"pod_free_qty\": 0,\r\n        \"pod_rec_qty\": 0,\r\n        \"pod_status\": \"\"\r\n      },\r\n      \"l_Inv_Po_Indent_Dtl_List\": [],\r\n      \"l_Inv_Po_Quot_Dtl_List\": [\r\n        {\r\n          \"poqd_id\": \"\",\r\n          \"poqd_item_id_item\": \"ITEM000000000192\",\r\n          \"poqd_party_acnt\": \"CUST000000000123\",\r\n          \"poqd_po_dtl_id_pod\": \"\",\r\n          \"poqd_po_id_poh\": \"\",\r\n          \"poqd_po_quantity\": \"{{qty}}\",\r\n          \"poqd_quot_dtl_id_quod\": \"\",\r\n          \"poqd_quot_id_quoh\": \"\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"l_Inv_Po_Hdr_Model\": {\r\n    \"poh_po_no\": \"\",\r\n    \"poh_po_id\": \"\",\r\n    \"poh_wf_series_serm\": \"POQ\",\r\n    \"poh_enquiry_id_ineh\": \"ENQRd084e1e013ae4f718ded62f6d10cd509\",\r\n    \"poh_quoh_id_quoh\": \"QUOH6a2dc177e8814715a08f21ed090d15c8\",\r\n    \"poh_shipto_type\": \"S\",\r\n    \"poh_exchange_rate\": 1,\r\n    \"poh_remarks\": \"Create Quotation PO\",\r\n    \"poh_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_currrency_curr\": \"INR\",\r\n    \"poh_po_dt\": \"2024-01-19\",\r\n    \"poh_from_dt\": \"2024-01-19\",\r\n    \"poh_wf_doctype_dtyp\": \"DT0021\",\r\n    \"poh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"poh_fy_display_desc\": \"2023-24\",\r\n    \"poh_billto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_billing_add_name\": \"Ankush\",\r\n    \"poh_billing_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_billing_add_city\": \"NAGPUR\",\r\n    \"poh_billing_add_county_cntr\": \"IN\",\r\n    \"poh_billing_add_state_stat\": \"MH\",\r\n    \"poh_billing_add_zip\": \"441122\",\r\n    \"poh_billing_add_phone\": \"+916546546546\",\r\n    \"poh_shipto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_shipto_add_name\": \"Ankush\",\r\n    \"poh_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_shipto_add_city\": \"NAGPUR\",\r\n    \"poh_shipto_add_county_cntr\": \"IN\",\r\n    \"poh_shipto_add_state_stat\": \"MH\",\r\n    \"poh_shipto_add_zip\": \"441122\",\r\n    \"poh_shipto_add_phone\": \"+916546546546\",\r\n    \"poh_desp_mode_gmst\": \"GENM000000000050\",\r\n    \"poh_to_dt\": \"2024-02-20\",\r\n    \"poh_wf_tag1_code\": \"23\",\r\n    \"poh_wf_tag2_code\": \"30\",\r\n    \"poh_party_code\": \"6962\",\r\n    \"poh_party_name\": \"Luis\",\r\n    \"poh_party_id_acnt\": \"CUST000000000123\",\r\n    \"poh_party_add_name\": \"Lacy\",\r\n    \"poh_party_add_address\": \"8662 Allen Key\",\r\n    \"poh_party_add_city\": \"Ellistown\",\r\n    \"poh_party_add_county_cntr\": \"IN\",\r\n    \"poh_party_add_state_stat\": \"MH\",\r\n    \"poh_party_add_zip\": \"444002\",\r\n    \"poh_party_add_phone\": \"+914567837654\",\r\n    \"poh_net_amount_total\": \"257229.75\",\r\n    \"poh_tcs_percent\": 1.2,\r\n    \"poh_tcs_amount\": \"{{tcs_amnt}}\",\r\n    \"poh_tax_amount_total\": \"{{total_tax}}\",\r\n    \"poh_net_amount_curr\": \"\",\r\n    \"poh_round_off_value\": \"\",\r\n    \"poh_delivery_dt\": \"2024-01-19\",\r\n    \"poh_delivery_at\": \"Willmouth\",\r\n    \"poh_delivery_point\": \"Willmouth\",\r\n    \"poh_pref_transporter\": \" \",\r\n    \"poh_terms_and_conditions\": \"GENM000000000075\",\r\n    \"poh_tcs_tax\": \"CUST000000000031\",\r\n    \"poh_gross_amout_total\": \"{{gross_amnt}}\",\r\n    \"poh_po_rev\": 0,\r\n    \"poh_po_parent\": \" \",\r\n    \"poh_is_closed\": \"NO\",\r\n    \"poh_isworkflowapproved\": \"YES\",\r\n    \"poh_isdraft\": \"NO\"\r\n  },\r\n  \"l_Inv_Po_Payterms_Dtl_List\": [\r\n    {\r\n      \"popt_id\": \"\",\r\n      \"popt_param_2\": 0,\r\n      \"popt_po_id_poh\": \"\",\r\n      \"popt_po_rev\": 0,\r\n      \"popt_srno\": 0,\r\n      \"popt_payterm_id_gmst\": \" \",\r\n      \"gmst_description\": \"Advance Payment X %\",\r\n      \"popt_param_1\": 10\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_update_po",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_update_po"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare quotation Copy(fixed)",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"\r",
+							"// pm.environment.set(\"qty\",pm.variables.replaceIn\r",
+							"// ('{{$randomInt}}'));\r",
+							"// let qty = pm.environment.get(\"qty\");\r",
+							"// let rate = pm.environment.get(\"rate\");\r",
+							"\r",
+							"let discountcal = 25 * 5 / 100;\r",
+							"pm.environment.set(\"discountcal\",discountcal.toFixed(2));\r",
+							"\r",
+							"let discount_rate = 25 - discountcal;\r",
+							"pm.environment.set(\"discount_rate\", discount_rate.toFixed(2));\r",
+							"\r",
+							"let pkg_forward_amount = discount_rate * 5 / 100;\r",
+							"pm.environment.set(\"pkg_forward_amount\",pkg_forward_amount.toFixed(2));\r",
+							"\r",
+							"let netrate = discount_rate + pkg_forward_amount;\r",
+							" pm.environment.set(\"netrate\", netrate.toFixed(2));\r",
+							"\r",
+							"let gross_amnt = netrate * 40 ;\r",
+							"pm.environment.set(\"gross_amnt\",gross_amnt.toFixed(2));\r",
+							"\r",
+							"let igst = gross_amnt * 2 / 100;\r",
+							"pm.environment.set(\"igst\",igst.toFixed(2));\r",
+							"let total_tax = igst + igst ;\r",
+							"pm.environment.set(\"total_tax\",total_tax.toFixed(2));\r",
+							"\r",
+							"let net_amnt = gross_amnt + total_tax ;\r",
+							"pm.environment.set(\"net_amnt\",net_amnt.toFixed(2));\r",
+							"\r",
+							"let tcs_amnt = net_amnt * 1.2 / 100\r",
+							"pm.environment.set(\"tcs_amnt\",tcs_amnt.toFixed(2));\r",
+							"\r",
+							"let h_net_amnt_t = net_amnt + tcs_amnt;\r",
+							"pm.environment.set(\"h_net_amnt_t\",h_net_amnt_t.toFixed(2));\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"\r",
+							"// let roundh_net_amnt_t = Math.round(h_net_amnt_t);\r",
+							"// pm.environment.set(\"roundh_net_amnt_t\",h_net_amnt_t.toString());\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"l_Inv_Po_Dtl_Line_Model\": [\r\n    {\r\n      \"l_Inv_Po_Delivery_Dtl_List\": [\r\n        {\r\n          \"podd_id\": \"\",\r\n          \"podd_po_dtl_id_pod\": \"\",\r\n          \"podd_po_id_poh\": \"\",\r\n          \"podd_delivery_qty\": \"40\",\r\n          \"podd_delivery_date\": \"2024-01-18\",\r\n          \"podd_delivery_seq\": 1,\r\n          \"podd_po_rev\": 0\r\n        }\r\n      ],\r\n      \"l_Inv_Po_Dtl_Model\": {\r\n        \"pod_item_id_item\": \"ITEM000000000192\",\r\n        \"pod_item_code\": \"1075\",\r\n        \"pod_item_name\": \"Practical Wooden Chicken\",\r\n        \"pod_tech_specs\": \"comp\",\r\n        \"pod_qty\": \"40\",\r\n        \"pod_po_uom_unit\": \"NOS\",\r\n        \"pod_rate\": \"25\",\r\n        \"pod_stock_uom_unit\": \"NOS\",\r\n        \"pod_discount_per\": \"5\",\r\n        \"pod_item_tolerance\": 0,\r\n        \"pod_pkg_forwd_amout\": \"\",\r\n        \"pod_pkg_forward_per\": \"5\",\r\n        \"pod_taxrate_taxm\": \"TAXM000000000003\",\r\n        \"pod_igst_per_taxm\": 0,\r\n        \"pod_cgst_per_taxm\": 2,\r\n        \"pod_sgst_per_taxm\": 2,\r\n        \"pod_ugst_per_taxm\": 2,\r\n        \"pod_cess_per_taxm\": 0,\r\n        \"pod_surcharge_per_taxm\": 0,\r\n        \"pod_vat_per_taxm\": 0,\r\n        \"pod_tax1_per_taxm\": 0,\r\n        \"pod_tax2_per_taxm\": 0,\r\n        \"pod_tax3_per_taxm\": 0,\r\n        \"pod_igst_amount\":  0,\r\n        \"pod_cgst_amount\": \"{{igst}}\",\r\n        \"pod_sgst_amount\": \"{{igst}}\",\r\n        \"pod_ugst_amount\": 0,\r\n        \"pod_cess_amount\": 0,\r\n        \"pod_surcharge_amount\": 0,\r\n        \"pod_vat_amount\": 0,\r\n        \"pod_tax1_amount\": 0,\r\n        \"pod_tax2_amount\": 0,\r\n        \"pod_tax3_amount\": 0,\r\n        \"pod_net_rate\": \"{{netrate}}\",\r\n        \"pod_gross_amount\": \"{{gross_amnt}}\",\r\n        \"pod_net_amount\": \"{{net_amnt}}\",\r\n        \"pod_shipto_add_name\": \"Ankush\",\r\n        \"pod_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n        \"pod_shipto_add_city\": \"NAGPUR\",\r\n        \"pod_shipto_add_county_cntr\": \"IN\",\r\n        \"pod_shipto_add_state_stat\": \"MH\",\r\n        \"pod_shipto_add_zip\": \"441122\",\r\n        \"pod_shipto_add_phone\": \"+916546546546\",\r\n        \"pod_total_taxes\": \"1292.36\",\r\n        \"pod_id\": \"\",\r\n        \"pod_shipto_entity_code_ent\": \"001001000000000000\",\r\n        \"pod_po_id_poh\": \"\",\r\n        \"pod_po_rev\": 0,\r\n        \"pod_po_srno\": 0,\r\n        \"pod_free_qty\": 0,\r\n        \"pod_rec_qty\": 0,\r\n        \"pod_status\": \"\"\r\n      },\r\n      \"l_Inv_Po_Indent_Dtl_List\": [],\r\n      \"l_Inv_Po_Quot_Dtl_List\": [\r\n        {\r\n          \"poqd_id\": \"\",\r\n          \"poqd_item_id_item\": \"ITEM000000000192\",\r\n          \"poqd_party_acnt\": \"CUST000000000123\",\r\n          \"poqd_po_dtl_id_pod\": \"\",\r\n          \"poqd_po_id_poh\": \"\",\r\n          \"poqd_po_quantity\": \"40\",\r\n          \"poqd_quot_dtl_id_quod\": \"\",\r\n          \"poqd_quot_id_quoh\": \"\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"l_Inv_Po_Hdr_Model\": {\r\n    \"poh_po_no\": \"\",\r\n    \"poh_po_id\": \"\",\r\n    \"poh_wf_series_serm\": \"POQ\",\r\n    \"poh_enquiry_id_ineh\": \"ENQRd084e1e013ae4f718ded62f6d10cd509\",\r\n    \"poh_quoh_id_quoh\": \"QUOH6a2dc177e8814715a08f21ed090d15c8\",\r\n    \"poh_shipto_type\": \"S\",\r\n    \"poh_exchange_rate\": 1,\r\n    \"poh_remarks\": \"Create Quotation PO\",\r\n    \"poh_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_currrency_curr\": \"INR\",\r\n    \"poh_po_dt\": \"2024-01-19\",\r\n    \"poh_from_dt\": \"2024-01-19\",\r\n    \"poh_wf_doctype_dtyp\": \"DT0021\",\r\n    \"poh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"poh_fy_display_desc\": \"2023-24\",\r\n    \"poh_billto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_billing_add_name\": \"Ankush\",\r\n    \"poh_billing_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_billing_add_city\": \"NAGPUR\",\r\n    \"poh_billing_add_county_cntr\": \"IN\",\r\n    \"poh_billing_add_state_stat\": \"MH\",\r\n    \"poh_billing_add_zip\": \"441122\",\r\n    \"poh_billing_add_phone\": \"+916546546546\",\r\n    \"poh_shipto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_shipto_add_name\": \"Ankush\",\r\n    \"poh_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_shipto_add_city\": \"NAGPUR\",\r\n    \"poh_shipto_add_county_cntr\": \"IN\",\r\n    \"poh_shipto_add_state_stat\": \"MH\",\r\n    \"poh_shipto_add_zip\": \"441122\",\r\n    \"poh_shipto_add_phone\": \"+916546546546\",\r\n    \"poh_desp_mode_gmst\": \"GENM000000000050\",\r\n    \"poh_to_dt\": \"2024-02-20\",\r\n    \"poh_wf_tag1_code\": \"23\",\r\n    \"poh_wf_tag2_code\": \"30\",\r\n    \"poh_party_code\": \"6962\",\r\n    \"poh_party_name\": \"Luis\",\r\n    \"poh_party_id_acnt\": \"CUST000000000123\",\r\n    \"poh_party_add_name\": \"Lacy\",\r\n    \"poh_party_add_address\": \"8662 Allen Key\",\r\n    \"poh_party_add_city\": \"Ellistown\",\r\n    \"poh_party_add_county_cntr\": \"IN\",\r\n    \"poh_party_add_state_stat\": \"MH\",\r\n    \"poh_party_add_zip\": \"444002\",\r\n    \"poh_party_add_phone\": \"+914567837654\",\r\n    \"poh_net_amount_total\": \"{{h_net_amnt_t}}\",\r\n    \"poh_tcs_percent\": 1.2,\r\n    \"poh_tcs_amount\": \"{{tcs_amnt}}\",\r\n    \"poh_tax_amount_total\": \"1292.36\",\r\n    \"poh_net_amount_curr\": \"\",\r\n    \"poh_round_off_value\": \"\",\r\n    \"poh_delivery_dt\": \"2024-01-19\",\r\n    \"poh_delivery_at\": \"Willmouth\",\r\n    \"poh_delivery_point\": \"Willmouth\",\r\n    \"poh_pref_transporter\": \" \",\r\n    \"poh_terms_and_conditions\": \"GENM000000000075\",\r\n    \"poh_tcs_tax\": \"CUST000000000031\",\r\n    \"poh_gross_amout_total\": \"{{gross_amnt}}\",\r\n    \"poh_po_rev\": 0,\r\n    \"poh_po_parent\": \" \",\r\n    \"poh_is_closed\": \"NO\",\r\n    \"poh_isworkflowapproved\": \"YES\",\r\n    \"poh_isdraft\": \"NO\"\r\n  },\r\n  \"l_Inv_Po_Payterms_Dtl_List\": [\r\n    {\r\n      \"popt_id\": \"\",\r\n      \"popt_param_2\": 0,\r\n      \"popt_po_id_poh\": \"\",\r\n      \"popt_po_rev\": 0,\r\n      \"popt_srno\": 0,\r\n      \"popt_payterm_id_gmst\": \" \",\r\n      \"gmst_description\": \"Advance Payment X %\",\r\n      \"popt_param_1\": 10\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_update_po",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_update_po"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare quotation Copy",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"to date\",pm.variables.replaceIn\r",
+							"('{{$randomDateFuture}}'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"l_Inv_Po_Dtl_Line_Model\": [\r\n    {\r\n      \"l_Inv_Po_Delivery_Dtl_List\": [\r\n        {\r\n          \"podd_id\": \"\",\r\n          \"podd_po_dtl_id_pod\": \"\",\r\n          \"podd_po_id_poh\": \"\",\r\n          \"podd_delivery_qty\": 20,\r\n          \"podd_delivery_date\": \"2024-01-16\",\r\n          \"podd_delivery_seq\": 1,\r\n          \"podd_po_rev\": 0\r\n        }\r\n      ],\r\n      \"l_Inv_Po_Dtl_Model\": {\r\n        \"pod_item_id_item\": \"ITEM000000000192\",\r\n        \"pod_item_code\": \"1075\",\r\n        \"pod_item_name\": \"Practical Wooden Chicken\",\r\n        \"pod_tech_specs\": \"comp\",\r\n        \"pod_qty\": 20,\r\n        \"pod_po_uom_unit\": \"NOS\",\r\n        \"pod_rate\": 15,\r\n        \"pod_stock_uom_unit\": \"NOS\",\r\n        \"pod_discount_per\": 5,\r\n        \"pod_item_tolerance\": 0,\r\n        \"pod_pkg_forwd_amout\": \"\",\r\n        \"pod_pkg_forward_per\": 5,\r\n        \"pod_taxrate_taxm\": \"TAXM000000000003\",\r\n        \"pod_igst_per_taxm\": 5,\r\n        \"pod_cgst_per_taxm\": 2,\r\n        \"pod_sgst_per_taxm\": 2,\r\n        \"pod_ugst_per_taxm\": 2,\r\n        \"pod_cess_per_taxm\": 0,\r\n        \"pod_surcharge_per_taxm\": 0,\r\n        \"pod_vat_per_taxm\": 0,\r\n        \"pod_tax1_per_taxm\": 0,\r\n        \"pod_tax2_per_taxm\": 0,\r\n        \"pod_tax3_per_taxm\": 0,\r\n        \"pod_igst_amount\": 5.99 ,\r\n        \"pod_cgst_amount\": 5.99,\r\n        \"pod_sgst_amount\": 0,\r\n        \"pod_ugst_amount\": 0,\r\n        \"pod_cess_amount\": 0,\r\n        \"pod_surcharge_amount\": 0,\r\n        \"pod_vat_amount\": 0,\r\n        \"pod_tax1_amount\": 0,\r\n        \"pod_tax2_amount\": 0,\r\n        \"pod_tax3_amount\": 0,\r\n        \"pod_net_rate\": 14.96,\r\n        \"pod_gross_amount\": 299.2,\r\n        \"pod_net_amount\": 311.16,\r\n        \"pod_shipto_add_name\": \"Ankush\",\r\n        \"pod_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n        \"pod_shipto_add_city\": \"NAGPUR\",\r\n        \"pod_shipto_add_county_cntr\": \"IN\",\r\n        \"pod_shipto_add_state_stat\": \"MH\",\r\n        \"pod_shipto_add_zip\": \"441122\",\r\n        \"pod_shipto_add_phone\": \"+916546546546\",\r\n        \"pod_total_taxes\": 11.96,\r\n        \"pod_id\": \"\",\r\n        \"pod_shipto_entity_code_ent\": \"001001000000000000\",\r\n        \"pod_po_id_poh\": \"\",\r\n        \"pod_po_rev\": 0,\r\n        \"pod_po_srno\": 0,\r\n        \"pod_free_qty\": 0,\r\n        \"pod_rec_qty\": 0,\r\n        \"pod_status\": \"\"\r\n      },\r\n      \"l_Inv_Po_Indent_Dtl_List\": [],\r\n      \"l_Inv_Po_Quot_Dtl_List\": [\r\n        {\r\n          \"poqd_id\": \"\",\r\n          \"poqd_item_id_item\": \"ITEM000000000192\",\r\n          \"poqd_party_acnt\": \"CUST000000000123\",\r\n          \"poqd_po_dtl_id_pod\": \"\",\r\n          \"poqd_po_id_poh\": \"\",\r\n          \"poqd_po_quantity\": 20,\r\n          \"poqd_quot_dtl_id_quod\": \"\",\r\n          \"poqd_quot_id_quoh\": \"\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"l_Inv_Po_Hdr_Model\": {\r\n    \"poh_po_no\": \"\",\r\n    \"poh_po_id\": \"\",\r\n    \"poh_wf_series_serm\": \"POQ\",\r\n    \"poh_enquiry_id_ineh\": \"ENQRd084e1e013ae4f718ded62f6d10cd509\",\r\n    \"poh_quoh_id_quoh\": \"QUOH6a2dc177e8814715a08f21ed090d15c8\",\r\n    \"poh_shipto_type\": \"S\",\r\n    \"poh_exchange_rate\": 1,\r\n    \"poh_remarks\": \"Create Quotation PO\",\r\n    \"poh_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_currrency_curr\": \"INR\",\r\n    \"poh_po_dt\": \"2024-01-16\",\r\n    \"poh_from_dt\": \"2024-01-16\",\r\n    \"poh_wf_doctype_dtyp\": \"DT0021\",\r\n    \"poh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"poh_fy_display_desc\": \"2023-24\",\r\n    \"poh_billto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_billing_add_name\": \"Ankush\",\r\n    \"poh_billing_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_billing_add_city\": \"NAGPUR\",\r\n    \"poh_billing_add_county_cntr\": \"IN\",\r\n    \"poh_billing_add_state_stat\": \"MH\",\r\n    \"poh_billing_add_zip\": \"441122\",\r\n    \"poh_billing_add_phone\": \"+916546546546\",\r\n    \"poh_shipto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_shipto_add_name\": \"Ankush\",\r\n    \"poh_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_shipto_add_city\": \"NAGPUR\",\r\n    \"poh_shipto_add_county_cntr\": \"IN\",\r\n    \"poh_shipto_add_state_stat\": \"MH\",\r\n    \"poh_shipto_add_zip\": \"441122\",\r\n    \"poh_shipto_add_phone\": \"+916546546546\",\r\n    \"poh_desp_mode_gmst\": \"GENM000000000050\",\r\n    \"poh_to_dt\": \"2024-02-15\",\r\n    \"poh_wf_tag1_code\": \"23\",\r\n    \"poh_wf_tag2_code\": \"30\",\r\n    \"poh_party_code\": \"6962\",\r\n    \"poh_party_name\": \"Luis\",\r\n    \"poh_party_id_acnt\": \"CUST000000000123\",\r\n    \"poh_party_add_name\": \"Lacy\",\r\n    \"poh_party_add_address\": \"8662 Allen Key\",\r\n    \"poh_party_add_city\": \"Ellistown\",\r\n    \"poh_party_add_county_cntr\": \"IN\",\r\n    \"poh_party_add_state_stat\": \"MH\",\r\n    \"poh_party_add_zip\": \"444002\",\r\n    \"poh_party_add_phone\": \"+914567837654\",\r\n    \"poh_net_amount_total\": 314.89,\r\n    \"poh_tcs_percent\": 1.2,\r\n    \"poh_tcs_amount\": 3.73,\r\n    \"poh_tax_amount_total\": 11.96,\r\n    \"poh_net_amount_curr\": \"\",\r\n    \"poh_round_off_value\": 0.11,\r\n    \"poh_delivery_dt\": \"2024-01-17\",\r\n    \"poh_delivery_at\": \"Willmouth\",\r\n    \"poh_delivery_point\": \"Willmouth\",\r\n    \"poh_pref_transporter\": \" \",\r\n    \"poh_terms_and_conditions\": \"GENM000000000075\",\r\n    \"poh_tcs_tax\": \"CUST000000000031\",\r\n    \"poh_gross_amout_total\": 299.2,\r\n    \"poh_po_rev\": 0,\r\n    \"poh_po_parent\": \" \",\r\n    \"poh_is_closed\": \"NO\",\r\n    \"poh_isworkflowapproved\": \"YES\",\r\n    \"poh_isdraft\": \"NO\"\r\n  },\r\n  \"l_Inv_Po_Payterms_Dtl_List\": [\r\n    {\r\n      \"popt_id\": \"\",\r\n      \"popt_param_2\": 0,\r\n      \"popt_po_id_poh\": \"\",\r\n      \"popt_po_rev\": 0,\r\n      \"popt_srno\": 0,\r\n      \"popt_payterm_id_gmst\": \" \",\r\n      \"gmst_description\": \"Advance Payment X %\",\r\n      \"popt_param_1\": 10\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_update_po",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_update_po"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Compare quotation Copy 2",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"pm.environment.set(\"to date\",pm.variables.replaceIn\r",
+							"('{{$randomDateFuture}}'));"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"l_Inv_Po_Dtl_Line_Model\": [\r\n    {\r\n      \"l_Inv_Po_Delivery_Dtl_List\": [\r\n        {\r\n          \"podd_id\": \"\",\r\n          \"podd_po_dtl_id_pod\": \"\",\r\n          \"podd_po_id_poh\": \"\",\r\n          \"podd_delivery_qty\": 30,\r\n          \"podd_delivery_date\": \"2024-01-16\",\r\n          \"podd_delivery_seq\": 1,\r\n          \"podd_po_rev\": 0\r\n        }\r\n      ],\r\n      \"l_Inv_Po_Dtl_Model\": {\r\n        \"pod_item_id_item\": \"ITEM000000000192\",\r\n        \"pod_item_code\": \"1.075\",\r\n        \"pod_item_name\": \"Practical Wooden Chicken\",\r\n        \"pod_tech_specs\": \"comp\",\r\n        \"pod_qty\": 30,\r\n        \"pod_po_uom_unit\": \"NOS\",\r\n        \"pod_rate\": 20,\r\n        \"pod_stock_uom_unit\": \"NOS\",\r\n        \"pod_discount_per\": 5,\r\n        \"pod_item_tolerance\": 0,\r\n        \"pod_pkg_forwd_amout\": \"\",\r\n        \"pod_pkg_forward_per\": 5,\r\n        \"pod_taxrate_taxm\": \"TAXM000000000003\",\r\n        \"pod_igst_per_taxm\": 5,\r\n        \"pod_cgst_per_taxm\": 2,\r\n        \"pod_sgst_per_taxm\": 2,\r\n        \"pod_ugst_per_taxm\": 2,\r\n        \"pod_cess_per_taxm\": 0,\r\n        \"pod_surcharge_per_taxm\": 0,\r\n        \"pod_vat_per_taxm\": 0,\r\n        \"pod_tax1_per_taxm\": 0,\r\n        \"pod_tax2_per_taxm\": 0,\r\n        \"pod_tax3_per_taxm\": 0,\r\n        \"pod_igst_amount\": 11.97 ,\r\n        \"pod_cgst_amount\": 11.97,\r\n        \"pod_sgst_amount\": 0,\r\n        \"pod_ugst_amount\": 0,\r\n        \"pod_cess_amount\": 0,\r\n        \"pod_surcharge_amount\": 0,\r\n        \"pod_vat_amount\": 0,\r\n        \"pod_tax1_amount\": 0,\r\n        \"pod_tax2_amount\": 0,\r\n        \"pod_tax3_amount\": 0,\r\n        \"pod_net_rate\": 19.95,\r\n        \"pod_gross_amount\": 598.50,\r\n        \"pod_net_amount\": 622.44,\r\n        \"pod_shipto_add_name\": \"Ankush\",\r\n        \"pod_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n        \"pod_shipto_add_city\": \"NAGPUR\",\r\n        \"pod_shipto_add_county_cntr\": \"IN\",\r\n        \"pod_shipto_add_state_stat\": \"MH\",\r\n        \"pod_shipto_add_zip\": \"441122\",\r\n        \"pod_shipto_add_phone\": \"+916546546546\",\r\n        \"pod_total_taxes\": 23.94,\r\n        \"pod_id\": \"\",\r\n        \"pod_shipto_entity_code_ent\": \"001001000000000000\",\r\n        \"pod_po_id_poh\": \"\",\r\n        \"pod_po_rev\": 0,\r\n        \"pod_po_srno\": 0,\r\n        \"pod_free_qty\": 0,\r\n        \"pod_rec_qty\": 0,\r\n        \"pod_status\": \"\"\r\n      },\r\n      \"l_Inv_Po_Indent_Dtl_List\": [],\r\n      \"l_Inv_Po_Quot_Dtl_List\": [\r\n        {\r\n          \"poqd_id\": \"\",\r\n          \"poqd_item_id_item\": \"ITEM000000000192\",\r\n          \"poqd_party_acnt\": \"CUST000000000123\",\r\n          \"poqd_po_dtl_id_pod\": \"\",\r\n          \"poqd_po_id_poh\": \"\",\r\n          \"poqd_po_quantity\": 30,\r\n          \"poqd_quot_dtl_id_quod\": \"\",\r\n          \"poqd_quot_id_quoh\": \"\"\r\n        }\r\n      ]\r\n    }\r\n  ],\r\n  \"l_Inv_Po_Hdr_Model\": {\r\n    \"poh_po_no\": \"\",\r\n    \"poh_po_id\": \"\",\r\n    \"poh_wf_series_serm\": \"POQ\",\r\n    \"poh_enquiry_id_ineh\": \"ENQR7aed6021db57441abf29ace2cbf06700\",\r\n    \"poh_quoh_id_quoh\": \"QRETaf4e4bd2de114e3094c7878a1f596465\",\r\n    \"poh_shipto_type\": \"S\",\r\n    \"poh_exchange_rate\": 1,\r\n    \"poh_remarks\": \"Create Quotation PO\",\r\n    \"poh_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_currrency_curr\": \"INR\",\r\n    \"poh_po_dt\": \"2024-01-16\",\r\n    \"poh_from_dt\": \"2024-01-16\",\r\n    \"poh_wf_doctype_dtyp\": \"DT0021\",\r\n    \"poh_fy_id_fyrm\": \"FINM000000000002\",\r\n    \"poh_fy_display_desc\": \"2023-24\",\r\n    \"poh_billto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_billing_add_name\": \"Ankush\",\r\n    \"poh_billing_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_billing_add_city\": \"NAGPUR\",\r\n    \"poh_billing_add_county_cntr\": \"IN\",\r\n    \"poh_billing_add_state_stat\": \"MH\",\r\n    \"poh_billing_add_zip\": \"441122\",\r\n    \"poh_billing_add_phone\": \"+916546546546\",\r\n    \"poh_shipto_entity_code_ent\": \"001001000000000000\",\r\n    \"poh_shipto_add_name\": \"Ankush\",\r\n    \"poh_shipto_add_address\": \"K-41/42, Butibori Industrial Area, Butibori\",\r\n    \"poh_shipto_add_city\": \"NAGPUR\",\r\n    \"poh_shipto_add_county_cntr\": \"IN\",\r\n    \"poh_shipto_add_state_stat\": \"MH\",\r\n    \"poh_shipto_add_zip\": \"441122\",\r\n    \"poh_shipto_add_phone\": \"+916546546546\",\r\n    \"poh_desp_mode_gmst\": \"GENM000000000050\",\r\n    \"poh_to_dt\": \"2024-02-15\",\r\n    \"poh_wf_tag1_code\": \"23\",\r\n    \"poh_wf_tag2_code\": \"30\",\r\n    \"poh_party_code\": \"6962\",\r\n    \"poh_party_name\": \"Luis\",\r\n    \"poh_party_id_acnt\": \"CUST000000000123\",\r\n    \"poh_party_add_name\": \"Lacy\",\r\n    \"poh_party_add_address\": \"8662 Allen Key\",\r\n    \"poh_party_add_city\": \"Ellistown\",\r\n    \"poh_party_add_county_cntr\": \"IN\",\r\n    \"poh_party_add_state_stat\": \"MH\",\r\n    \"poh_party_add_zip\": \"444002\",\r\n    \"poh_party_add_phone\": \"+914567837654\",\r\n    \"poh_net_amount_total\": 629.91,\r\n    \"poh_tcs_percent\": 1.2,\r\n    \"poh_tcs_amount\": 7.47,\r\n    \"poh_tax_amount_total\": 23.94,\r\n    \"poh_net_amount_curr\": \"\",\r\n    \"poh_round_off_value\": 0.09,\r\n    \"poh_delivery_dt\": \"2024-01-17\",\r\n    \"poh_delivery_at\": \"Willmouth\",\r\n    \"poh_delivery_point\": \"Willmouth\",\r\n    \"poh_pref_transporter\": \" \",\r\n    \"poh_terms_and_conditions\": \"GENM000000000075\",\r\n    \"poh_tcs_tax\": \"CUST000000000031\",\r\n    \"poh_gross_amout_total\": 598.50,\r\n    \"poh_po_rev\": 0,\r\n    \"poh_po_parent\": \" \",\r\n    \"poh_is_closed\": \"NO\",\r\n    \"poh_isworkflowapproved\": \"YES\",\r\n    \"poh_isdraft\": \"NO\"\r\n  },\r\n  \"l_Inv_Po_Payterms_Dtl_List\": [\r\n    {\r\n      \"popt_id\": \"\",\r\n      \"popt_param_2\": 0,\r\n      \"popt_po_id_poh\": \"\",\r\n      \"popt_po_rev\": 0,\r\n      \"popt_srno\": 0,\r\n      \"popt_payterm_id_gmst\": \" \",\r\n      \"gmst_description\": \"Advance Payment X %\",\r\n      \"popt_param_1\": 10\r\n    }\r\n  ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://mprosuitetest.microproindia.com/InventoryService-1.0/inventory/ctrl/save_update_po",
+					"protocol": "https",
+					"host": [
+						"mprosuitetest",
+						"microproindia",
+						"com"
+					],
+					"path": [
+						"InventoryService-1.0",
+						"inventory",
+						"ctrl",
+						"save_update_po"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "baseUrl",
+			"value": "https://postman-integration-testing.glitch.me/"
+		}
+	]
+}
